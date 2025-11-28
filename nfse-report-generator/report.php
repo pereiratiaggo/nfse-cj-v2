@@ -104,6 +104,9 @@ $totalSemConsulta = 0;
             </tfoot>
         </table>
 
+        <hr />
+        Total Geral: <strong><?= formatarValor($totalSemConsulta + $totalComConsulta) ?></strong>
+
         <a href="index.php" class="btn btn-primary mt-4">Voltar para o Envio</a>
     </div>
 
