@@ -3,7 +3,7 @@ session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
     $uploadedFile = $_FILES['zipFile'];
-    $uploadDir = 'uploads/';
+    $uploadDir = 'uploads';
     $nfseWithConsulta = [];
     $nfseWithoutConsulta = [];
 
@@ -26,12 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
 
                 $files = scandir($tempDir);
                 if (pathinfo(end($files), PATHINFO_EXTENSION) != 'xml') {
-                    $tempDir = $tempDir_base . '\\issued\\';
+                    $tempDir = $tempDir_base . DIRECTORY_SEPARATOR . 'issued';
                     $files = scandir($tempDir);
                 }
 
                 if (pathinfo(end($files), PATHINFO_EXTENSION) != 'xml') {
-                    $tempDir = $tempDir_base . $files[2];
+                    $tempDir = $tempDir_base . DIRECTORY_SEPARATOR . $files[2];
                     $files = scandir($tempDir);
                 }
 
