@@ -11,15 +11,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
         $fileName = basename($uploadedFile['name']);
         $uploadFilePath = $uploadDir . $fileName;
 
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
         if (move_uploaded_file($uploadedFile['tmp_name'], $uploadFilePath)) {
             $zip = new ZipArchive;
             if ($zip->open($uploadFilePath) === TRUE) {
-                $tempDir = $uploadDir . 'temp_extr_' . uniqid();
+                $tempDir_base = $uploadDir . 'temp_extr_' . uniqid();
+                $tempDir = $tempDir_base;
                 mkdir($tempDir);
                 $zip->extractTo($tempDir);
                 $zip->close();
 
                 $files = scandir($tempDir);
+                if (pathinfo(end($files), PATHINFO_EXTENSION) != 'xml') {
+                    $tempDir = $tempDir_base . '\\issued\\';
+                    $files = scandir($tempDir);
+                }
+
+                if (pathinfo(end($files), PATHINFO_EXTENSION) != 'xml') {
+                    $tempDir = $tempDir_base . $files[2];
+                    $files = scandir($tempDir);
+                }
+
                 foreach ($files as $file) {
                     if (is_file($tempDir . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) == 'xml') {
                         $xml = simplexml_load_file($tempDir . '/' . $file);
@@ -51,24 +66,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
                 }
 
                 // Clean up temporary files and directory
-                $files = glob($tempDir . '/*'); 
-                foreach($files as $file){ 
-                  if(is_file($file)) {
-                    unlink($file); 
-                  }
+                $files = glob($tempDir . '/*');
+                foreach ($files as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
+                    }
                 }
                 rmdir($tempDir);
                 unlink($uploadFilePath);
+
+                $_SESSION['nfseWithConsulta'] = $nfseWithConsulta;
+                $_SESSION['nfseWithoutConsulta'] = $nfseWithoutConsulta;
+
+                header('Location: report.php');
+                exit;
             }
+        } else {
+            var_dump($uploadedFile['error']);
+            die();
         }
+    } else {
+        var_dump($uploadedFile['error']);
+        die();
     }
-
-    $_SESSION['nfseWithConsulta'] = $nfseWithConsulta;
-    $_SESSION['nfseWithoutConsulta'] = $nfseWithoutConsulta;
-
-    header('Location: report.php');
-    exit;
-} else {
-    header('Location: index.php');
-    exit;
 }
+header('Location: index.php');
+exit;
