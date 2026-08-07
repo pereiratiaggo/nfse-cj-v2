@@ -3,7 +3,7 @@ session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
     $uploadedFile = $_FILES['zipFile'];
-    $uploadDir = 'uploads';
+    $uploadDir = 'uploads' . DIRECTORY_SEPARATOR;
     $nfseWithConsulta = [];
     $nfseWithoutConsulta = [];
 
