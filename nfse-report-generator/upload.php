@@ -82,11 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['zipFile'])) {
                 exit;
             }
         } else {
-            var_dump($uploadedFile['error']);
+            var_dump("Error: 1. " . $uploadedFile['error']);
             die();
         }
     } else {
-        var_dump($uploadedFile['error']);
+        var_dump("Error: 2. " . $uploadedFile['error']);
         die();
     }
 }
